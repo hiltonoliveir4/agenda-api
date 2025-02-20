@@ -15,9 +15,9 @@ class EventService
         private readonly FileUploadService $fileUploadService
     ) {}
 
-    public function getAllEvents(User $user): Paginator
+    public function getAllEvents(User $user): \Illuminate\Database\Eloquent\Collection
     {
-        return $user->events()->latest()->paginate(10);
+        return $user->events()->latest()->get();
     }
 
     public function getEventById(User $user, int $eventId): ?Event

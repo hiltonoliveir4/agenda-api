@@ -30,13 +30,21 @@ class EventController extends Controller
         return response()->json($event, 201);
     }
 
-    public function show(Event $event): JsonResponse
+    public function show(Event $event, Request $request): JsonResponse
     {
+        if ($request->user()->cannot('view', $event)) {
+            abort(403, message: "Nao autorizado");
+        }
+
         return response()->json($event);
     }
 
     public function update(UpdateEventRequest $request, Event $event): JsonResponse
     {
+        if ($request->user()->cannot('update', $event)) {
+            abort(403, message: "Nao autorizado");
+        }
+
         $validated = $request->validated();
 
         if ($request->hasFile('image')) {
@@ -47,8 +55,12 @@ class EventController extends Controller
         return response()->json($updatedEvent);
     }
 
-    public function destroy(Event $event): JsonResponse
+    public function destroy(Event $event, Request $request): JsonResponse
     {
+        if ($request->user()->cannot('delete', $event)) {
+            abort(403, message: "Nao autorizado");
+        }
+
         $this->eventService->deleteEvent(Auth::user(), $event->id);
         return response()->json(null, 204);
     }
