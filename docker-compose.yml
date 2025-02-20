@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: agenda-api
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/var/www/html
+    working_dir: /var/www/html
+    networks:
+      - laravel_network
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - APP_KEY=base64:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+      - DB_CONNECTION=pgsql
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_DATABASE=agenda
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=secret
+
+  db:
+    image: postgres:13
+    container_name: db-postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: agenda
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: secret
+    networks:
+      - laravel_network
+
+networks:
+  laravel_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
